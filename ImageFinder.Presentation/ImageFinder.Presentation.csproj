@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>netcoreapp3.1</TargetFramework>
+		<UseWPF>true</UseWPF>
+		<ApplicationIcon>Application.ico</ApplicationIcon>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\ImageFinder.CrossCutting\ImageFinder.CrossCutting.csproj" />
+		<ProjectReference Include="..\ImageFinder.Service\ImageFinder.Service.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.5" />
+		<PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.5" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.0.0" />
+
+		<PackageReference Include="Serilog.Sinks.File" Version="4.1.0" />
+		<PackageReference Include="Serilog.Extensions.Logging" Version="3.0.1" />
+		<PackageReference Include="Serilog.Settings.Configuration" Version="3.1.0" />
+
+		<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.19" />
+		<PackageReference Include="MiqM.Xceed.Wpf.Toolkit.NETCore" Version="3.5.1.3" />
+		<PackageReference Include="MaterialDesignThemes" Version="3.1.3" />
+	</ItemGroup>
+	<ItemGroup>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+			<_Parameter1>ImageFinder.Presentation.Test</_Parameter1>
+		</AssemblyAttribute>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="appsettings.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+</Project>
