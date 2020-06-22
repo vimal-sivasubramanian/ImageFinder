@@ -21,11 +21,15 @@ namespace ImageFinder.Presentation.ViewModels
 
         public bool IsProcessing { get => _isProcessing; set { _isProcessing = value; OnPropertyChanged(nameof(IsProcessing)); } }
 
+        public IImagePreviewViewModel ImagePreviewViewModel { get; set; }
+
         public ImageFinderViewModel(IServiceProvider serviceProvider, IEventAggregator eventAggregator)
         {
             Search = serviceProvider.GetService<SearchCommand>();
 
-            ImageListViewModel = serviceProvider.GetService<IImageListViewModel>(); ;
+            ImageListViewModel = serviceProvider.GetService<IImageListViewModel>();
+
+            ImagePreviewViewModel = serviceProvider.GetService<IImagePreviewViewModel>();
 
             AlertMessageQueue = new SnackbarMessageQueue(TimeSpan.FromSeconds(10));
 

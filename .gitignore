@@ -1,7 +1,10 @@
 [Oo]bj/
 [Bb]in/
+.vs
 *.suo
 *.user
 /TestResults
 *.vspscc
 *.vssscc
+
+

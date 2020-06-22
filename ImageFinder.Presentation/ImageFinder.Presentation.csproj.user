@@ -6,4 +6,14 @@
   <PropertyGroup>
     <ActiveDebugProfile>ImageViewer.Presentation</ActiveDebugProfile>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Update="Views\ImagePreview\ImagePreviewView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\ImagePreview\ImagePreviewView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
 </Project>

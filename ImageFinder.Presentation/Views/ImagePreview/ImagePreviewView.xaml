@@ -1,0 +1,46 @@
+﻿<UserControl x:Class="ImageFinder.Presentation.Views.ImagePreviewView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:Behaviors="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:converter="clr-namespace:ImageFinder.Presentation.Converter">
+    <UserControl.Resources>
+        <converter:PathToBitmapConverter x:Key="PathToBitmap" />
+        <Style x:Key="ImageDetailsTextStyle" TargetType="{x:Type TextBlock}">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+            <Setter Property="MaxWidth" Value="300"/>
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+        </Style>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibility" />
+    </UserControl.Resources>
+    <Grid Visibility="{Binding IsActivated, Converter={StaticResource BooleanToVisibility}}">
+        <Grid x:Name="overlay" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" 
+              Background="Black" Opacity=".8" IsHitTestVisible="True">
+            <Behaviors:Interaction.Triggers>
+                <Behaviors:EventTrigger EventName="MouseDown">
+                    <Behaviors:ChangePropertyAction TargetObject="{Binding}"  PropertyName="IsActivated" Value="False"/>
+                </Behaviors:EventTrigger>
+            </Behaviors:Interaction.Triggers>
+        </Grid>
+        <ContentControl VerticalAlignment="Center" HorizontalAlignment="Center" DataContext="{Binding ImageMetadata}"
+                        SnapsToDevicePixels="True" UseLayoutRounding="True" Margin="20">
+            <ContentControl.Template>
+                <ControlTemplate>
+                    <Grid>
+                        <Image Source="{Binding Url,Converter={StaticResource PathToBitmap}}" x:Name="image" Stretch="Uniform" />
+
+                        <Grid x:Name="imageDetails" VerticalAlignment="Bottom" Margin="5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="2*"/>
+                                <RowDefinition Height="4*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Text="{Binding Title}" Style="{StaticResource ImageDetailsTextStyle}"/>
+                            <TextBlock Grid.Row="1" Text="{Binding Author, StringFormat=by {0}}" Style="{StaticResource ImageDetailsTextStyle}"/>
+                        </Grid>
+                    </Grid>
+                </ControlTemplate>
+            </ContentControl.Template>
+        </ContentControl>
+    </Grid>
+</UserControl>

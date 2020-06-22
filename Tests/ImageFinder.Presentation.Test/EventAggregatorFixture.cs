@@ -11,12 +11,12 @@ namespace ImageFinder.Presentation.Test
     [TestFixture(typeof(ImageMetadata))]
     public class EventAggregatorFixture<T> where T : class
     {
-        private IEventAggregator _eventAggregator;
+        private IEventAggregator _fixture;
 
         [SetUp]
         public void Setup()
         {
-            _eventAggregator = new EventAggregator();
+            _fixture = new EventAggregator();
         }
 
         [Test]
@@ -24,9 +24,9 @@ namespace ImageFinder.Presentation.Test
         {
             var mockedEventHandler = new Mock<Action<T>>();
 
-            _eventAggregator.Subscribe(mockedEventHandler.Object);
+            _fixture.Subscribe(mockedEventHandler.Object);
 
-            _eventAggregator.Publish<T>(null);
+            _fixture.Publish<T>(null);
 
             mockedEventHandler.Verify(_ => _.Invoke(null), Times.Never);
         }
@@ -38,9 +38,9 @@ namespace ImageFinder.Presentation.Test
 
             var mockValue = new Mock<T>();
 
-            _eventAggregator.Subscribe(mockedEventHandler.Object);
+            _fixture.Subscribe(mockedEventHandler.Object);
 
-            _eventAggregator.Publish(mockValue.Object);
+            _fixture.Publish(mockValue.Object);
 
             mockedEventHandler.Verify(_ => _.Invoke(It.IsAny<T>()), Times.Once);
         }
@@ -52,15 +52,15 @@ namespace ImageFinder.Presentation.Test
 
             var mockValue = new Mock<T>();
 
-            _eventAggregator.Subscribe(mockedEventHandler.Object);
+            _fixture.Subscribe(mockedEventHandler.Object);
 
-            _eventAggregator.Publish(mockValue.Object);
+            _fixture.Publish(mockValue.Object);
 
             mockedEventHandler.Verify(_ => _.Invoke(It.IsAny<T>()), Times.Once);
 
-            _eventAggregator.UnSubscribe(mockedEventHandler.Object);
+            _fixture.UnSubscribe(mockedEventHandler.Object);
 
-            _eventAggregator.Publish(mockValue.Object);
+            _fixture.Publish(mockValue.Object);
 
             mockedEventHandler.Verify(_ => _.Invoke(It.IsAny<T>()), Times.Once);
         }

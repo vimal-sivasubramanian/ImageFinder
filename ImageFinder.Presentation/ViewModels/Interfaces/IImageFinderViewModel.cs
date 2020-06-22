@@ -9,5 +9,6 @@ namespace ImageFinder.Presentation.ViewModels
         IImageListViewModel ImageListViewModel { get; set; }
         ISnackbarMessageQueue AlertMessageQueue { get; set; }
         bool IsProcessing { get; set; }
+        IImagePreviewViewModel ImagePreviewViewModel { get; set; }
     }
 }

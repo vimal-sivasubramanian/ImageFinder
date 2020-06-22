@@ -2,23 +2,26 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        xmlns:views="clr-namespace:ImageFinder.Presentation.Views"
-        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:Views="clr-namespace:ImageFinder.Presentation.Views"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"        
         Title="Image Finder" MinHeight="890" MinWidth="900" WindowState="Maximized"
+             xmlns:Behaviors="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:EventTriggers="clr-namespace:ImageFinder.Presentation.EventTriggers"
         Background="{DynamicResource MaterialDesignPaper}"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         FocusManager.FocusedElement="{x:Reference searchCriteriaTxt}">
-
-    <Window.Resources>
-        <BooleanToVisibilityConverter x:Key="BooleanToVisibility" />
-    </Window.Resources>
+    <Behaviors:Interaction.Triggers>
+        <EventTriggers:EscapeKeyDownEventTrigger>
+            <Behaviors:ChangePropertyAction TargetObject="{Binding ImagePreviewViewModel}"  PropertyName="IsActivated" Value="False"/>
+        </EventTriggers:EscapeKeyDownEventTrigger>
+    </Behaviors:Interaction.Triggers>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="5*"/>
             <RowDefinition Height="7*"/>
             <RowDefinition Height="85*"/>
         </Grid.RowDefinitions>
-        
+
         <TextBlock Grid.Row="0" Text="Image Finder" FontSize="30" Foreground="DarkCyan"
                    VerticalAlignment="Center" HorizontalAlignment="Center"/>
 
@@ -38,9 +41,11 @@
             </Button>
         </Grid>
 
-        <views:ImageListView Grid.Row="2" DataContext="{Binding ImageListViewModel}"/>
+        <Views:ImageListView Grid.Row="2" DataContext="{Binding ImageListViewModel}"/>
 
         <xctk:BusyIndicator Grid.RowSpan="3" IsBusy="{Binding IsProcessing}" />
+
+        <Views:ImagePreviewView Grid.RowSpan="3" DataContext="{Binding ImagePreviewViewModel}" />
 
         <materialDesign:Snackbar Grid.Row="2" MessageQueue="{Binding AlertMessageQueue}" HorizontalAlignment="Stretch" Margin="10" 
                                  ActionButtonStyle="{StaticResource MaterialDesignRaisedAccentButton}"

@@ -9,8 +9,8 @@ namespace ImageFinder.Presentation.Converter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var path = value.ToString();
-            return new BitmapImage(new Uri(path, UriKind.Absolute)) { DecodePixelWidth = 60 };
+            if (value == null) return null;
+            return new BitmapImage(new Uri(value.ToString(), UriKind.Absolute));
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

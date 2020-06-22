@@ -40,7 +40,9 @@ namespace ImageFinder.Presentation
             services.AddSingleton<IEventAggregator, EventAggregator>()
                     .AddTransient<IImageListViewModel, ImageListViewModel>()
                     .AddTransient<IImageFinderViewModel, ImageFinderViewModel>()
+                    .AddTransient<IImagePreviewViewModel, ImagePreviewViewModel>()
                     .AddTransient<SearchCommand>()
+                    .AddTransient<OpenImageCommand>()
                     .AddTransient<ImageFinderView>()
                     .AddQueryService()
                     .AddLogging(builder => builder.AddSerilog(logger));

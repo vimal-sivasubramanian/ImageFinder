@@ -1,8 +1,11 @@
 ﻿using ImageFinder.CrossCutting;
 using ImageFinder.CrossCutting.Interfaces;
 using ImageFinder.CrossCutting.Models;
+using ImageFinder.Presentation.Commands;
+using System;
 using System.Collections.Generic;
 using System.Windows.Input;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ImageFinder.Presentation.ViewModels
 {
@@ -12,7 +15,11 @@ namespace ImageFinder.Presentation.ViewModels
 
         public IList<ImageMetadata> Images { get; set; }
 
-        public ImageListViewModel(IEventAggregator eventAggregator) => SubscribeToEvents(eventAggregator);
+        public ImageListViewModel(IEventAggregator eventAggregator, IServiceProvider serviceProvider)
+        {
+            OpenImage = serviceProvider.GetService<OpenImageCommand>();
+            SubscribeToEvents(eventAggregator);
+        }
 
         private void SubscribeToEvents(IEventAggregator eventAggregator)
         {

@@ -14,7 +14,7 @@ namespace ImageFinder.Presentation.Test
     [TestFixture]
     public class SearchCommandFixture
     {
-        private SearchCommand _searchCommand;
+        private SearchCommand _fixture;
         private Mock<IImageQueryService> _queryServiceMock;
         private Mock<IEventAggregator> _eventAggregatorMock;
 
@@ -24,7 +24,7 @@ namespace ImageFinder.Presentation.Test
             _queryServiceMock = new Mock<IImageQueryService>();
             _eventAggregatorMock = new Mock<IEventAggregator>();
             var loggerMock = new Mock<ILogger<SearchCommand>>();
-            _searchCommand = new SearchCommand(_eventAggregatorMock.Object, loggerMock.Object, _queryServiceMock.Object);
+            _fixture = new SearchCommand(_eventAggregatorMock.Object, loggerMock.Object, _queryServiceMock.Object);
         }
 
         [Test]
@@ -33,7 +33,7 @@ namespace ImageFinder.Presentation.Test
         [TestCase(null)]
         public void Invalid_Parameter_Value_To_CanExecute(object value)
         {
-            Assert.IsFalse(_searchCommand.CanExecute(value));
+            Assert.IsFalse(_fixture.CanExecute(value));
         }
 
         [Test]
@@ -42,14 +42,14 @@ namespace ImageFinder.Presentation.Test
         [TestCase(null)]
         public void Invalid_Parameter_Value_To_Execute(object value)
         {
-            _searchCommand.Execute(value);
+            _fixture.Execute(value);
             _queryServiceMock.Verify(_ => _.QueryAsync(string.Empty), Times.Never);
         }
 
         [Test]
         public void Should_Trigger_Event_About_LongRunning_Process()
         {
-            _searchCommand.Execute("check");
+            _fixture.Execute("check");
             _eventAggregatorMock.Verify(_ => _.Publish(It.IsAny<ProcessingState>()), Times.Exactly(2));
         }
 
@@ -58,7 +58,7 @@ namespace ImageFinder.Presentation.Test
         [TestCase("check,nature")]
         public void Should_Trigger_QueryService_For_Valid_Criteria(string value)
         {
-            _searchCommand.Execute(value);
+            _fixture.Execute(value);
             _queryServiceMock.Verify(_ => _.QueryAsync(value), Times.Once);
         }
 
@@ -69,7 +69,7 @@ namespace ImageFinder.Presentation.Test
         {
             IList<ImageMetadata> images = Enumerable.Repeat(new ImageMetadata { Url = "https:\\random.com\random.jpg" }, 20).ToList();
             _queryServiceMock.Setup(_ => _.QueryAsync(value)).Returns(Task.FromResult(images));
-            _searchCommand.Execute(value);
+            _fixture.Execute(value);
             _eventAggregatorMock.Verify(_ => _.Publish(images), Times.Once);
         }
 
@@ -78,7 +78,7 @@ namespace ImageFinder.Presentation.Test
         {
             _queryServiceMock.Setup(_ => _.QueryAsync("check")).Throws<ImageQueryException>();
 
-            _searchCommand.Execute("check");
+            _fixture.Execute("check");
 
             _eventAggregatorMock.Verify(_ => _.Publish(It.IsAny<Error>()));
 
