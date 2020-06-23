@@ -1,12 +1,10 @@
-﻿using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
-using ImageFinder.CrossCutting.Models;
+﻿using ImageFinder.CrossCutting.Models;
 using ImageFinder.Service.Handlers;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Moq.Protected;
 using NUnit.Framework;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
@@ -64,6 +62,56 @@ namespace ImageFinder.Service.Test
 
             Assert.AreEqual( _fixture.Handle(new Queries.ImageSearchQuery(), default).Result, It.IsAny<IList<ImageMetadata>>());
         }
+
+        [Test]
+        public async Task When_Flickr_Responds_With_Valid_Feed()
+        {
+            string feed = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>" +
+                "<feed xmlns=\"http://www.w3.org/2005/Atom\">" +
+                "<entry> <title>Call of summer</title>" +
+                "<content type=\"html\">			&lt;p&gt;&lt;a href=&quot;https://www.flickr.com/people/184414591@N04/&quot;&gt;orlanefrye&lt;/a&gt; posted a photo:&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://www.flickr.com/photos/184414591@N04/50036636753/&quot; title=&quot;Call of summer&quot;&gt;&lt;img src=&quot;https://live.staticflickr.com/65535/50036636753_5c55c5db8a_m.jpg&quot; width=&quot;240&quot; height=&quot;181&quot; alt=&quot;Call of summer&quot; /&gt;&lt;/a&gt;&lt;/p&gt;</content>" +
+                "<author><name>orlanefrye</name></author>" +
+                "<link rel=\"enclosure\" type=\"image/jpeg\" href=\"https://live.staticflickr.com/65535/50036636753_5c55c5db8a_b.jpg\" /> " +
+                "</entry></feed>";
+            var response = new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(feed),
+            };
+            MockHttpClientResponseWith(response);
+
+            var result = await _fixture.Handle(new Queries.ImageSearchQuery(), default);
+
+            Assert.IsTrue(result.Count == 1);
+
+            Assert.AreEqual(result[0].ThumbnailUrl, "https://live.staticflickr.com/65535/50036636753_5c55c5db8a_m.jpg");
+        }
+
+        [Test]
+        public async Task When_Flickr_Responds_With_Valid_Feed_With_HtmlEntities()
+        {
+            string feed = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>" +
+                "<feed xmlns=\"http://www.w3.org/2005/Atom\">" +
+                "<entry> <title>Call of summer</title>" +
+                "<content type=\"html\">			&lt;p&gt;&lt;a href=&quot;https://www.flickr.com/people/184414591@N04/&quot;&gt;orlanefrye&lt;/a&gt; posted a photo:&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://www.flickr.com/photos/184414591@N04/50036636753/&quot; title=&quot;Call of&amp;nbsp;summer&quot;&gt;&lt;img src=&quot;https://live.staticflickr.com/65535/50036636753_5c55c5db8a_m.jpg&quot; width=&quot;240&quot; height=&quot;181&quot; alt=&quot;Call of summer&quot; /&gt;&lt;/a&gt;&lt;/p&gt;</content>" +
+                "<author><name>orlanefrye</name></author>" +
+                "<link rel=\"enclosure\" type=\"image/jpeg\" href=\"https://live.staticflickr.com/65535/50036636753_5c55c5db8a_b.jpg\" /> " +
+                "</entry></feed>";
+            var response = new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(feed),
+            };
+            MockHttpClientResponseWith(response);
+
+            var result = await _fixture.Handle(new Queries.ImageSearchQuery(), default);
+
+            Assert.IsTrue(result.Count == 1);
+
+            Assert.AreEqual(result[0].ThumbnailUrl, "https://live.staticflickr.com/65535/50036636753_5c55c5db8a_m.jpg");
+        }
+
+
 
         private void MockHttpClientResponseWith(HttpResponseMessage response)
         {

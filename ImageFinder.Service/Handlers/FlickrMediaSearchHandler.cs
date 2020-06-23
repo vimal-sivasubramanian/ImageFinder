@@ -9,6 +9,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using System.Xml.XPath;
@@ -41,16 +42,17 @@ namespace ImageFinder.Service.Handlers
             if (stream.Length == 0) return default;
 
             var feed = (FlickrFeed)new XmlSerializer(typeof(FlickrFeed)).Deserialize(stream);
-            return feed.Entries
+            var result = feed.Entries
                     .Select(MapToImageMetadata)
                     .ToList();
+            return result;
         }
 
-        private static ImageMetadata MapToImageMetadata(Entry entry)
+        private ImageMetadata MapToImageMetadata(Entry entry)
         {
-            var content = entry.Content.Replace("&nbsp;", string.Empty);
-            var contentXml = XDocument.Parse($"<content>{content}</content>");
-            var thumbnailUrl = contentXml.XPathEvaluate("string(/content/p/a/img/@src)").ToString();
+            var contentXml = entry.Content.ConvertHtmlToXml("content");
+            var document = XDocument.Parse(contentXml);
+            var thumbnailUrl = document.XPathEvaluate("string(/content/p/a/img/@src)").ToString();
 
             return new ImageMetadata()
             {
