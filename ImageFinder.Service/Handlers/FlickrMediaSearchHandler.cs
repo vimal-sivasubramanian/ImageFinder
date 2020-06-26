@@ -19,6 +19,7 @@ namespace ImageFinder.Service.Handlers
     internal class FlickrMediaSearchHandler : IRequestHandler<ImageSearchQuery, IList<ImageMetadata>>
     {
         private const string _flickApi = "https://www.flickr.com/services/feeds/photos_public.gne";
+        private const string _token = "img src=\"";
         private readonly HttpClient _httpClient;
         private readonly ILogger<FlickrMediaSearchHandler> _logger;
 
@@ -50,15 +51,24 @@ namespace ImageFinder.Service.Handlers
 
         private ImageMetadata MapToImageMetadata(Entry entry)
         {
-            var contentXml = entry.Content.ConvertHtmlToXml("content");
-            var document = XDocument.Parse(contentXml);
-            var thumbnailUrl = document.XPathEvaluate("string(/content/p/a/img/@src)").ToString();
+            string thumbnailUrl = null;
+            try
+            {
+                var contentXml = entry.Content.ConvertHtmlToXml("content");
+                thumbnailUrl = contentXml.Substring(contentXml.IndexOf(_token) + _token.Length).Split('\"')[0];
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Failed to extract thumbnail url from " + entry.Content);
+            }
+
+            var url = entry.Links.Find(link => link.Type == "image/jpeg").Href;
 
             return new ImageMetadata()
             {
                 Title = entry.Title,
-                Url = entry.Links.Find(link => link.Type == "image/jpeg").Href,
-                ThumbnailUrl = thumbnailUrl,
+                Url = url,
+                ThumbnailUrl = thumbnailUrl ?? url,
                 Author = entry.Author?.Name ?? "Unknown"
             };
         }
